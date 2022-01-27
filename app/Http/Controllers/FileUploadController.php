@@ -35,7 +35,19 @@ class FileUploadController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //return 'this works bitch';
+        // return view('thisworks');
+        $file = $request->file('uploadedfile');
+        $filename = time().$file->getClientOriginalName();
+
+        $path = $file->storeAs('public', $filename);
+
+        FileUpload::create([
+            'filename' => $filename
+        ]);
+
+        $savedfile = FileUpload::latest()->firstOrFail();
+        return view('thisworks')->with('savedfile', $savedfile);
     }
 
     /**
