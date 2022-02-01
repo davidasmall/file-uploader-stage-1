@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FileUpload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FileUploadController extends Controller
 {
@@ -35,19 +36,23 @@ class FileUploadController extends Controller
      */
     public function store(Request $request)
     {
-        //return 'this works bitch';
-        // return view('thisworks');
         $file = $request->file('uploadedfile');
-        $filename = time().$file->getClientOriginalName();
+        $filename = time() . $file->getClientOriginalName();
 
-        $path = $file->storeAs('public', $filename);
+        //$path = $file->storeAs('public', $filename, 's3');
+        $path = 'public/' . $filename;
 
-        FileUpload::create([
-            'filename' => $filename
-        ]);
+        // FileUpload::create([
+        //     'filename' => $filename
+        // ]);
 
-        $savedfile = FileUpload::latest()->firstOrFail();
-        return view('thisworks')->with('savedfile', $savedfile);
+        //$savedFile = FileUpload::latest()->firstOrFail();
+
+        Storage::disk('s3')->put($path, $file);
+
+        //return view('thisworks')->with('savedfile', $savedfile);
+        // return back()->withSuccess('uploaded successfully');
+        return view('thisworks');
     }
 
     /**
